@@ -1,6 +1,27 @@
 <?php
 
 return [
+    'container_suffix' => [
+        'key' => 'container_suffix',
+        'xtype' => 'textfield',
+        'value' => '',
+        'area' => 'furls',
+        'namespace' => 'core',
+    ],
+    'friendly_urls_strict' => [
+        'key' => 'friendly_urls_strict',
+        'xtype' => 'combo-boolean',
+        'value' => true,
+        'area' => 'furls',
+        'namespace' => 'core',
+    ],
+    'use_alias_path' => [
+        'key' => 'use_alias_path',
+        'xtype' => 'combo-boolean',
+        'value' => true,
+        'area' => 'furls',
+        'namespace' => 'core',
+    ],
     'friendly_urls' => [
         'key' => 'friendly_urls',
         'xtype' => 'combo-boolean',
