@@ -92,6 +92,10 @@ class App
 
                 $fenom->addAccessorSmart('assets_version', 'assets_version', Fenom::ACCESSOR_PROPERTY);
                 $fenom->assets_version = $this::assets_version;
+
+                $fenom->addModifier('uri2id', function ($input) {
+                    return $this->modx->findResource($input);
+                });
                 break;
 
             case 'OnHandleRequest':
