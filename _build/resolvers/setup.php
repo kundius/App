@@ -131,7 +131,7 @@ $packages = [
     'pThumb' => '2.3.3-pl',
     'settingswidget' => '1.0.2-beta',
     'simpleUpdater' => '2.1.1-beta',
-    // 'Tickets' => '1.8.1-pl',
+    'Tickets' => '1.8.1-pl',
     'TinyMCE Rich Text Editor' => '1.2.0-pl',
     'yTranslit' => '1.2.0-pl',
 ];
