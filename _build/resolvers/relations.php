@@ -56,6 +56,17 @@ if ($transport->xpdo) {
                     }
                 }
 
+                // update tickets template
+                if(!empty($properties['tickets']) && !empty($properties['tickets']['template'])) {
+                    if($template = $modx->getObject('modTemplate', [
+                        'templatename' => $properties['tickets']['template']
+                    ])) {
+                        $properties['tickets']['template'] = $template->id;
+                        $resource->set('properties', $properties);
+                        $resource->save();
+                    }
+                }
+
                 // update parent
                 if(!empty($properties['parent'])) {
                     if($parent = $modx->getObject('modResource', [
