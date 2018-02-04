@@ -5,23 +5,20 @@ return [
         'index' => [
             'pagetitle' => 'Home',
             'hidemenu' => false,
-            'properties' => [
-                'template' => 'BaseTemplate'
-            ]
+            '_template' => 'BaseTemplate'
         ],
         'service' => [
             'pagetitle' => 'Service',
             'hidemenu' => true,
             'published' => false,
+            '_template' => 'BaseTemplate',
             'resources' => [
                 '404' => [
                     'pagetitle' => '404',
                     'hidemenu' => true,
                     'uri' => '404',
                     'uri_override' => true,
-                    'properties' => [
-                        'template' => 'BaseTemplate'
-                    ]
+                    'template' => 'BaseTemplate'
                 ],
                 'sitemap.xml' => [
                     'pagetitle' => 'Sitemap',
@@ -31,9 +28,6 @@ return [
                     'uri_override' => true,
                 ],
             ],
-            'properties' => [
-                'template' => 'BaseTemplate'
-            ]
         ],
     ],
 ];

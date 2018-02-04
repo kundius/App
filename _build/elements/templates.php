@@ -4,12 +4,10 @@ return [
     'BaseTemplate' => [
         'file' => 'base',
         'description' => 'Base template',
-        'properties' => [
-            'tmplvars' => [
-                'seo.title',
-                'seo.keywords',
-                'seo.description'
-            ]
+        '_tmplvars' => [
+            'seo.title',
+            'seo.keywords',
+            'seo.description'
         ]
     ],
 ];

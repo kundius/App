@@ -11,7 +11,7 @@ if ($transport->xpdo) {
             // relations for template vars
             $templates = $modx->getIterator('modTemplate');
             /** @var modTemplate $template */
-            foreach ($templates as $template) {
+            /*foreach ($templates as $template) {
                 // remove old relations
                 foreach($modx->getIterator('modTemplateVarTemplate', [
                     'templateid' => $template->id
@@ -36,7 +36,7 @@ if ($transport->xpdo) {
                 unset($properties['tmplvars']);
                 $template->set('properties', $properties);
                 $template->save();
-            }
+            }*/
 
             // relations for template of resources
             $resources = $modx->getIterator('modResource');
@@ -44,36 +44,12 @@ if ($transport->xpdo) {
             foreach ($resources as $resource) {
                 $properties = $resource->get('properties');
 
-                // update template
-                if(!empty($properties['template'])) {
-                    if($template = $modx->getObject('modTemplate', [
-                        'templatename' => $properties['template']
-                    ])) {
-                        unset($properties['template']);
-                        $resource->set('template', $template->id);
-                        $resource->set('properties', $properties);
-                        $resource->save();
-                    }
-                }
-
                 // update tickets template
                 if(!empty($properties['tickets']) && !empty($properties['tickets']['template'])) {
                     if($template = $modx->getObject('modTemplate', [
                         'templatename' => $properties['tickets']['template']
                     ])) {
                         $properties['tickets']['template'] = $template->id;
-                        $resource->set('properties', $properties);
-                        $resource->save();
-                    }
-                }
-
-                // update parent
-                if(!empty($properties['parent'])) {
-                    if($parent = $modx->getObject('modResource', [
-                        'uri' => $properties['parent']
-                    ])) {
-                        unset($properties['parent']);
-                        $resource->set('parent', $parent->id);
                         $resource->set('properties', $properties);
                         $resource->save();
                     }

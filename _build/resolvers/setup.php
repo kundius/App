@@ -1,20 +1,20 @@
 <?php
 
 if (!function_exists('installPackage')) {
-    function installPackage(modX $modx, $packageName)
+    function installPackage(modX $modx, $packageName, $providerName)
     {
-        /** @var modTransportProvider $provider */
-        if (!$provider = $modx->getObject('transport.modTransportProvider', ['service_url:LIKE' => '%modstore.pro%'])) {
+       /** @var modTransportProvider $provider */
+        if ($providerName && !$provider = $modx->getObject('transport.modTransportProvider',
+            array('service_url:LIKE' => '%' . $providerName . '%'))
+        ) {
             $provider = $modx->getObject('transport.modTransportProvider', 1);
         }
         $modx->getVersionData();
         $productVersion = $modx->version['code_name'] . '-' . $modx->version['full_version'];
-
-        $response = $provider->request('package', 'GET', [
+        $response = $provider->request('package', 'GET', array(
             'supports' => $productVersion,
             'query' => $packageName,
-        ]);
-
+        ));
         if (!empty($response)) {
             $foundPackages = simplexml_load_string($response->response);
             foreach ($foundPackages as $foundPackage) {
@@ -25,22 +25,20 @@ if (!function_exists('installPackage')) {
                     $versionSignature = explode('.', $sig[1]);
                     /** @noinspection PhpUndefinedFieldInspection */
                     $url = $foundPackage->location;
-
                     if (!downloadPackage($url,
                         $modx->getOption('core_path') . 'packages/' . $foundPackage->signature . '.transport.zip')
                     ) {
-                        return [
+                        return array(
                             'success' => 0,
                             'message' => "Could not download package <b>{$packageName}</b>.",
-                        ];
+                        );
                     }
-
                     // Add in the package as an object so it can be upgraded
                     /** @var modTransportPackage $package */
                     $package = $modx->newObject('transport.modTransportPackage');
                     $package->set('signature', $foundPackage->signature);
                     /** @noinspection PhpUndefinedFieldInspection */
-                    $package->fromArray([
+                    $package->fromArray(array(
                         'created' => date('Y-m-d h:i:s'),
                         'updated' => null,
                         'state' => 1,
@@ -51,8 +49,7 @@ if (!function_exists('installPackage')) {
                         'version_major' => $versionSignature[0],
                         'version_minor' => !empty($versionSignature[1]) ? $versionSignature[1] : 0,
                         'version_patch' => !empty($versionSignature[2]) ? $versionSignature[2] : 0,
-                    ]);
-
+                    ));
                     if (!empty($sig[2])) {
                         $r = preg_split('/([0-9]+)/', $sig[2], -1, PREG_SPLIT_DELIM_CAPTURE);
                         if (is_array($r) && !empty($r)) {
@@ -62,28 +59,26 @@ if (!function_exists('installPackage')) {
                             $package->set('release', $sig[2]);
                         }
                     }
-
                     if ($package->save() && $package->install()) {
-                        return [
+                        return array(
                             'success' => 1,
                             'message' => "<b>{$packageName}</b> was successfully installed",
-                        ];
+                        );
                     } else {
-                        return [
+                        return array(
                             'success' => 0,
                             'message' => "Could not save package <b>{$packageName}</b>",
-                        ];
+                        );
                     }
                     break;
                 }
             }
         } else {
-            return [
+            return array(
                 'success' => 0,
                 'message' => "Could not find <b>{$packageName}</b> in MODX repository",
-            ];
+            );
         }
-
         return true;
     }
 }
@@ -118,23 +113,88 @@ if (!function_exists('downloadPackage')) {
     }
 }
 
-$packages = [
-    'Ace' => '1.6.5-pl',
-    'pdoTools' => '2.10.0-pl',
-    'AdminPanel' => '1.1.0-pl',
-    'FormIt' => '3.0.4-pl',
-    'AjaxForm' => '1.1.9-pl',
-    'debugParser' => '1.1.0-pl',
-    'FastUploadTV' => '1.0.0-pl',
-    'Jevix' => '1.2.2-pl',
-    'MIGX' => '2.11.0-pl',
-    'pThumb' => '2.3.3-pl',
-    'settingswidget' => '1.0.2-beta',
-    'simpleUpdater' => '2.1.1-beta',
-    'Tickets' => '1.8.1-pl',
-    'TinyMCE Rich Text Editor' => '1.2.0-pl',
-    'yTranslit' => '1.2.0-pl',
-];
+$packages = array(
+    array(
+        'name' => 'pdoTools',
+        'version' => '2.9.2-pl1',
+        'provider' => 'modstore.pro'
+    ),
+    array(
+        'name' => 'yTranslit',
+        'version' => '1.2.0-pl',
+        'provider' => 'modstore.pro'
+    ),
+    array(
+        'name' => 'Jevix',
+        'version' => '1.2.2-pl',
+        'provider' => 'modstore.pro'
+    ),
+    array(
+        'name' => 'Tickets',
+        'version' => '1.6.16-pl',
+        'provider' => 'modstore.pro'
+    ),
+    array(
+        'name' => 'FormIt',
+        'version' => '3.0.2-pl',
+        'provider' => 'modx.com'
+    ),
+    array(
+        'name' => 'AjaxForm',
+        'version' => '1.1.9-pl',
+        'provider' => 'modstore.pro'
+    ),
+    array(
+        'name' => 'Ace',
+        'version' => '1.6.5-pl',
+        'provider' => 'modstore.pro'
+    ),
+    array(
+        'name' => 'TinyMCE Rich Text Editor',
+        'version' => '1.2.0-pl',
+        'provider' => 'modx.com'
+    ),
+    array(
+        'name' => 'MIGX',
+        'version' => '2.9.6-pl',
+        'provider' => 'modx.com'
+    ),
+    array(
+        'name' => 'FastUploadTV',
+        'version' => '1.0.0-pl',
+        'provider' => 'modx.com'
+    ),
+    array(
+        'name' => 'pThumb',
+        'version' => '2.3.3-pl',
+        'provider' => 'modx.com'
+    ),
+    array(
+        'name' => 'settingsWidget',
+        'version' => '1.0.2-beta',
+        'provider' => 'modx.com'
+    ),
+    array(
+        'name' => 'simpleUpdater',
+        'version' => '2.1.0-beta',
+        'provider' => 'modx.com'
+    ),
+    array(
+        'name' => 'AdminPanel',
+        'version' => '1.1.0-pl',
+        'provider' => 'modstore.pro'
+    ),
+    array(
+        'name' => 'debugParser',
+        'version' => '1.1.0-pl',
+        'provider' => 'modstore.pro'
+    ),
+    array(
+        'name' => 'miniShop2',
+        'version' => '2.4.12-pl',
+        'provider' => 'modstore.pro'
+    ),
+);
 $success = false;
 
 /** @var xPDOTransport $transport */
@@ -145,16 +205,28 @@ if ($transport->xpdo) {
     switch ($options[xPDOTransport::PACKAGE_ACTION]) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
-            foreach ($packages as $name => $version) {
-                $installed = $modx->getIterator('transport.modTransportPackage', ['package_name' => $name]);
+			if (!$provider = $modx->getObject('transport.modTransportProvider', array('service_url:LIKE' => '%modstore.pro%'))) {
+				$provider = $modx->newObject('transport.modTransportProvider', array(
+					'name' => 'modstore.pro',
+					'service_url' => 'http://modstore.pro/extras/',
+					'username' => '',
+					'api_key' => '',
+					'description' => 'Repository of modstore.pro',
+					'created' => time(),
+				));
+				$provider->save();
+            }
+
+            foreach ($packages as $pkg) {
+                $installed = $modx->getIterator('transport.modTransportPackage', array('package_name' => $pkg['name']));
                 /** @var modTransportPackage $package */
                 foreach ($installed as $package) {
-                    if ($package->compareVersion($version, '<=')) {
+                    if ($package->compareVersion($pkg['version'], '<=')) {
                         continue(2);
                     }
                 }
-                $modx->log(modX::LOG_LEVEL_INFO, "Trying to install <b>{$name}</b>. Please wait...");
-                $response = installPackage($modx, $name);
+                $modx->log(modX::LOG_LEVEL_INFO, "Trying to install <b>{$pkg['name']}</b>. Please wait...");
+                $response = installPackage($modx, $pkg['name'], $pkg['provider']);
                 $level = $response['success']
                     ? modX::LOG_LEVEL_INFO
                     : modX::LOG_LEVEL_ERROR;
