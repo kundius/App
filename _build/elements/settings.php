@@ -26,7 +26,6 @@ return [
         'namespace' => 'core',
     ],
     'link_tag_scheme' => [
-        'key' => 'link_tag_scheme',
         'xtype' => 'textfield',
         'value' => 'abs',
         'area' => 'site',
