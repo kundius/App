@@ -140,7 +140,7 @@ class AppPackage
             /** @var modSystemSetting $setting */
             $setting = $this->modx->newObject('modSystemSetting');
             $setting->fromArray(array_merge([
-                'key' => 'app_' . $name,
+                'key' => $name,
                 'namespace' => $this::name_lower,
             ], $data), '', true, true);
             $output[] = [
