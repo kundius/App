@@ -120,9 +120,9 @@ $packages = array(
         'provider' => 'modstore.pro'
     ),
     array(
-        'name' => 'yTranslit',
-        'version' => '1.2.0-pl',
-        'provider' => 'modstore.pro'
+        'name' => 'translit',
+        'version' => '1.0.0-beta',
+        'provider' => 'modx.com'
     ),
     array(
         'name' => 'Jevix',
@@ -192,6 +192,11 @@ $packages = array(
     array(
         'name' => 'miniShop2',
         'version' => '2.4.12-pl',
+        'provider' => 'modstore.pro'
+    ),
+    array(
+        'name' => 'xLike',
+        'version' => '1.0.2-beta',
         'provider' => 'modstore.pro'
     ),
 );

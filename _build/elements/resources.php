@@ -2,16 +2,15 @@
 
 return [
     'web' => [
-        'index' => [
-            'pagetitle' => 'Home',
-            'hidemenu' => false,
-            '_template' => 'BaseTemplate'
+        'hello' => [
+            'pagetitle' => 'Hello',
+            'template' => 'BaseTemplate'
         ],
         'service' => [
             'pagetitle' => 'Service',
             'hidemenu' => true,
             'published' => false,
-            '_template' => 'BaseTemplate',
+            'template' => 0,
             'resources' => [
                 '404' => [
                     'pagetitle' => '404',

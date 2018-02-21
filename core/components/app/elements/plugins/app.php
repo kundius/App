@@ -4,12 +4,16 @@
 /** @var App $App */
 switch ($modx->event->name) {
     case 'OnMODXInit':
-        if ($App = $modx->getService('App', 'App', MODX_CORE_PATH . 'components/app/model/')) {
+        $modelPath = $modx->getOption('app_core_path', array(), $modx->getOption('core_path') . 'components/app/') . 'model/';
+
+        if ($App = $modx->getService('App', 'App', $modelPath)) {
             $App->initialize();
         }
         break;
     default:
-        if ($App = $modx->getService('App')) {
+        $modelPath = $modx->getOption('app_core_path', array(), $modx->getOption('core_path') . 'components/app/') . 'model/';
+        
+        if ($App = $modx->getService('App', 'App', $modelPath)) {
             $App->handleEvent($modx->event, $scriptProperties);
         }
 }

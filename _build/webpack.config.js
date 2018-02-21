@@ -4,9 +4,8 @@ const env = process.env.WEBPACK_ENV;
 
 const PATHS = {
     source: path.join(__dirname, 'assets/'),
-    build: path.join(__dirname, '../../../assets/components/app/web/')
+    build: path.join(__dirname, '../assets/components/app/web/')
 }
-console.log(__dirname);
 
 // Main Settings config
 module.exports = {
@@ -20,7 +19,6 @@ module.exports = {
     module: {
         rules: [{
             test: /\.js$/,
-            exclude: /(node_modules|bower_components)/,
             loader: 'babel-loader'
         }, {
             test: /\.less$/,
@@ -56,7 +54,7 @@ module.exports = {
                 }
             }]
         }, {
-            test: /\.(webm|mp4)$/,
+            test: /\.(webm|mp4|ogv|webm)$/,
             use: [{
                 loader: 'file-loader',
                 options: {
@@ -88,10 +86,20 @@ module.exports = {
         }]
     },
 
+    resolve: {
+        alias: {
+            jquery: "jquery/src/jquery"
+        }
+    },
+
     plugins: [
         new webpack.optimize.UglifyJsPlugin({
             minimize: env === 'production' ? true : false
-        })
+        }),
+        new webpack.DefinePlugin({
+            BUNDLED: true,
+            VERSION: '1.0'
+        }),
     ]
 
 };

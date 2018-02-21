@@ -17,19 +17,20 @@ class App
      */
     function __construct(modX &$modx, array $config = [])
     {
-        $this->modx =& $modx;
-        $corePath = MODX_CORE_PATH . 'components/app/';
-        $assetsUrl = MODX_ASSETS_URL . 'components/app/';
+        $this->modx = &$modx;
+        $corePath = $this->modx->getOption('app_core_path', $config, $this->modx->getOption('core_path') . 'components/app/');
+        $assetsUrl = $this->modx->getOption('app_assets_url', $config, $this->modx->getOption('assets_url') . 'components/app/');
 
         $this->config = array_merge([
             'corePath' => $corePath,
             'modelPath' => $corePath . 'model/',
             'processorsPath' => $corePath . 'processors/',
-
             'assetsUrl' => $assetsUrl,
-            'cssUrl' => $assetsUrl . 'css/',
-            'jsUrl' => $assetsUrl . 'js/',
+            'connectorUrl' => $assetsUrl . 'connector.php',
         ], $config);
+
+        $this->modx->addPackage('app', $this->config['modelPath']);
+        $this->modx->lexicon->load('app:default');
     }
 
 
@@ -93,8 +94,32 @@ class App
                 $fenom->addAccessorSmart('assets_version', 'assets_version', Fenom::ACCESSOR_PROPERTY);
                 $fenom->assets_version = $this::assets_version;
 
-                $fenom->addModifier('uri2id', function ($input) {
-                    return $this->modx->findResource($input);
+                $fenom->addAccessorSmart('assets_url', 'assets_url', Fenom::ACCESSOR_PROPERTY);
+                $fenom->assets_url = $this->config['assetsUrl'];
+
+                if ($this->modx->resource) {
+                    $fenom->addAccessorSmart('resource', 'resource', Fenom::ACCESSOR_PROPERTY);
+                    $resource = $this->modx->resource->toArray();
+                    $resource['content'] = $this->modx->resource->getContent();
+                    // TV parameters
+                    foreach ($resource as $k => $v) {
+                        if (is_array($v) && !empty($v[0]) && $k == $v[0]) {
+                            $resource[$k] = $this->modx->resource->getTVValue($k);
+                        }
+                    }
+                    $fenom->resource = $resource;
+                }
+
+                $fenom->addModifier('units', function ($input, $titles) {
+                    return $this->units($input, $titles);
+                });
+
+                $fenom->addModifier('primaryParent', function ($input) {
+                    return $this->primaryParent($input);
+                });
+
+                $fenom->addModifier('getImages', function ($input) {
+                    return $this->getImages($input);
                 });
                 break;
 
@@ -143,6 +168,51 @@ class App
                 // Compress output html for Google
                 $this->modx->resource->_output = preg_replace('#\s+#', ' ', $this->modx->resource->_output);
                 break;
+        }
+    }
+
+    public function units($number, $titles)
+    {
+        $keys = array(2, 0, 1, 1, 1, 2);
+        $mod = $number % 100;
+        $suffix_key = ($mod > 7 && $mod < 20) ? 2 : $keys[min($mod % 10, 5)];
+        return $titles[$suffix_key];
+    }
+
+    public function primaryParent($id)
+    {
+        $resource = $this->modx->getObject('modResource', $id);
+
+        if ($resource->parent == 0) {
+            return $resource->id;
+        } else {
+            return $this->primaryParent($resource->parent);
+        }
+    }
+
+    public function getImages($id)
+    {
+        $thumbs = [
+            // 'small',
+            // 'medium'
+        ];
+        $q = $this->modx->newQuery('msProductFile');
+        $q->where(array(
+            'msProductFile.product_id' => $id,
+            'msProductFile.parent' => 0,
+            'msProductFile.active' => 1
+        ));
+        foreach ($thumbs as $thumb) {
+            $q->leftJoin('msProductFile', $thumb, $thumb . '.parent = msProductFile.id');
+            $q->where(array(
+                $thumb . '.path:LIKE' => '%' . $thumb . '%'
+            ));
+            $q->select($thumb . '.url as ' . $thumb);
+        }
+        $q->sortby('rank', 'ASC');
+        $q->select($this->modx->getSelectColumns('msProductFile', 'msProductFile', ''));
+        if ($q->prepare() && $q->stmt->execute()) {
+            return $q->stmt->fetchAll(PDO::FETCH_ASSOC);
         }
     }
 

@@ -8,36 +8,6 @@ if ($transport->xpdo) {
     switch ($options[xPDOTransport::PACKAGE_ACTION]) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
-            // relations for template vars
-            $templates = $modx->getIterator('modTemplate');
-            /** @var modTemplate $template */
-            /*foreach ($templates as $template) {
-                // remove old relations
-                foreach($modx->getIterator('modTemplateVarTemplate', [
-                    'templateid' => $template->id
-                ]) as $tvt) $tvt->remove();
-
-                $properties = $template->get('properties');
-                
-                // continue if empty
-                if(empty($properties['tmplvars'])) continue;
-                
-                // add new relations
-                foreach($properties['tmplvars'] as $name) {
-                    if($tv = $modx->getObject('modTemplateVar', ['name' => $name])) {
-                        $tvt = $modx->newObject('modTemplateVarTemplate');
-                        $tvt->set('tmplvarid', $tv->id);
-                        $tvt->set('templateid', $template->id);
-                        $tvt->save();
-                    }
-                }
-
-                // remove tvs list
-                unset($properties['tmplvars']);
-                $template->set('properties', $properties);
-                $template->save();
-            }*/
-
             // relations for template of resources
             $resources = $modx->getIterator('modResource');
             /** @var modResource $resource */
